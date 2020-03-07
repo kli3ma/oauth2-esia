@@ -81,7 +81,7 @@ class EsiaProvider extends AbstractProvider implements ProviderInterface
     private function withClientSecret(array $params)
     {
         $message = $params['scope'].$params['timestamp'].$params['client_id'].$params['state'];
-        $signature = $this->signer->sign($message);
+        $signature = $this->signer->signCms($message);
         $params['client_secret'] = $this->encoder->base64UrlEncode($signature);
 
         return $params;
@@ -195,7 +195,7 @@ class EsiaProvider extends AbstractProvider implements ProviderInterface
 
     protected function createAccessToken(array $response, AbstractGrant $grant)
     {
-        return new EsiaAccessToken($response, $this->remoteCertificatePath);
+        return new EsiaAccessToken($response, $this->remoteCertificatePath, $this->signer);
     }
 
     protected function createResourceOwner(array $response, AccessToken $token)

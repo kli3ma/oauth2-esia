@@ -11,5 +11,5 @@ interface SignerInterface
      *
      * @return string
      */
-    public function sign($message);
+    public function signCms($message);
 }

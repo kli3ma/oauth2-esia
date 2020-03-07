@@ -6,15 +6,14 @@ use Ekapusta\OAuth2Esia\Interfaces\Token\ScopedTokenInterface;
 use InvalidArgumentException;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Key;
-use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\ValidationData;
 use League\OAuth2\Client\Token\AccessToken;
 
 class EsiaAccessToken extends AccessToken implements ScopedTokenInterface
 {
     private $parsedToken;
-
-    public function __construct(array $options = [], $publicKeyPath = null)
+    
+    public function __construct(array $options = [], $publicKeyPath = null, $signer = null)
     {
         parent::__construct($options);
 
@@ -25,12 +24,12 @@ class EsiaAccessToken extends AccessToken implements ScopedTokenInterface
             throw new InvalidArgumentException('Access token is invalid: '.var_export($options, true));
         }
 
-        if (null == $publicKeyPath) {
+        if (null == $publicKeyPath || $signer == null) {
             return;
         }
-
-        if (!$this->parsedToken->verify(new Sha256(), new Key(file_get_contents($publicKeyPath)))) {
-            throw new InvalidArgumentException('Access token can not be verified: '.var_export($options, true));
+        
+        if (!$this->parsedToken->verify($signer, new Key(file_get_contents($publicKeyPath)))) {
+            throw new InvalidArgumentException('Access token can not be verified');
         }
     }
 
@@ -44,3 +43,4 @@ class EsiaAccessToken extends AccessToken implements ScopedTokenInterface
         return $scopes;
     }
 }
+

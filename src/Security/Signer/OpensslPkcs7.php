@@ -7,7 +7,7 @@ use Ekapusta\OAuth2Esia\Security\Signer\Exception\SignException;
 
 class OpensslPkcs7 extends Signer
 {
-    public function sign($message)
+    public function signCms($message)
     {
         $certContent = file_get_contents($this->certificatePath);
         $keyContent = file_get_contents($this->privateKeyPath);
